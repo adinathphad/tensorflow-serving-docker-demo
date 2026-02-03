@@ -1,0 +1,21 @@
+# install
+pip install -r requirements.txt
+
+# train model
+python model.py
+
+# pull docker image (first time only)
+docker pull tensorflow/serving
+
+# run serving container
+docker run -d -p 9501:8501 \
+--mount type=bind,source=$(pwd)/half_plus_two,target=/models/half_plus_two \
+-e MODEL_NAME=half_plus_two \
+tensorflow/serving
+
+# check running containers
+docker ps
+
+# test API
+curl -X POST http://localhost:9501/v1/models/half_plus_two:predict \
+-d '{"instances":[[1.0],[2.0],[5.0]]}'
